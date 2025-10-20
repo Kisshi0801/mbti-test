@@ -23,6 +23,19 @@
   body.theme-OT { --accent:#28a745; background:#f1faf2; }     /* 緑 */
   body.theme-IG { --accent:#7d4fff; background:#f6f3ff; }     /* 紫 */
   body.theme-IT { --accent:#ff69b4; background:#fff5fa; }     /* ピンク */
+
+    /* === Legend（記号の意味） === */
+  .legend{margin:18px auto 0;max-width:760px;padding:16px 20px;border-radius:14px;
+    background:#f7f9fc;border:1px solid #e5e7eb}
+  .legend h3{margin:0 0 10px;font-size:14px;color:#374151;letter-spacing:.02em}
+  .legend-row{display:grid;grid-template-columns:28px 1fr 24px 28px 1fr;gap:10px;
+    align-items:center;padding:6px 0;border-top:1px dashed #e5e7eb}
+  .legend-row:first-of-type{border-top:0}
+  .k{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;
+    font-weight:800;font-size:13px;color:#fff;background:#9aa3af}
+  .d{font-size:13px;color:#4b5563}
+  .arrow{justify-self:center;color:#9aa3af;font-weight:700}
+
 </style>
 </head>
 <body>
@@ -57,20 +70,6 @@ if (["OG","OT","IG","IT"].includes(prefix)) {
   body.classList.add("theme-" + prefix);
 }
 
-// ▼ 軸スコアの表示（任意）
-const chips = document.getElementById('axisChips');
-if (sumsRaw){
-  // 例: "OI:3,GT:-2,SC:0,LR:5"
-  const map = Object.fromEntries(sumsRaw.split(',').map(s=>s.split(':')));
-  const labels = { OI:'outward / inward', GT:'giant / tiny', SC:'straight / curved', LR:'left / right' };
-  Object.entries(map).forEach(([k,v])=>{
-    const div=document.createElement('div'); div.className='pill';
-    const num=Number(v);
-    const dir = num===0 ? '±0 (tie)' : (num>0? `left +${num}` : `right ${num}`);
-    div.textContent = `${labels[k]} : ${dir}`;
-    chips.appendChild(div);
-  });
-}
 
 // ▼ タイプ名＆画像：ここをあなたが埋める
 //   キー：4文字コード（O/I × G/T × S/C × L/R の16通り）
@@ -90,8 +89,8 @@ const TYPE_BOOK = {
   
   "OTSL": { name: "ただ陳子が小さい型", img: "assets/OTSL.png", desc: "本当にただ陳子が小さいだけ" },
   "OTSR": { name: "かわいそうな型", img: "assets/OTSR.png", desc: "哀れ" },
-  "OTCL": { name: "ドワーフ", img: "assets/OTCL.png", desc: "わんちゃんある" },
-  "OTCR": { name: "ムーニーマン", img: "assets/OTCR.png", desc: "かわいいね" },
+  "OTCL": { name: "ドワーフ", img: "assets/OTCL.png", desc: "わんちゃんあるけど基本ニッチ" },
+  "OTCR": { name: "ムーニーマン", img: "assets/OTCR.png", desc: "かわいいね、男からは尊敬なし" },
 
   "IGSL": { name: "IGSL型（仮）", img: "assets/IGSL.png", desc: "説明を入れてください。" },
   "IGSR": { name: "IGSR型（仮）", img: "assets/IGSR.png", desc: "説明を入れてください。" },
@@ -109,6 +108,31 @@ const meta = TYPE_BOOK[code] || { name:"タイプ名を設定してください"
 document.getElementById('typeName').textContent = meta.name;
 document.getElementById('typeDesc').textContent = meta.desc;
 document.getElementById('typeImg').src = meta.img;
+
+<div class="legend">
+  <h3>タイプ記号の見方（対比）</h3>
+  <div class="legend-row">
+    <span class="k">O</span><span class="d">Outward　凸</span>
+    <span class="arrow">↔</span>
+    <span class="k">I</span><span class="d">Inward　 凹</span>
+  </div>
+  <div class="legend-row">
+    <span class="k">G</span><span class="d">Giant　　でかい</span>
+    <span class="arrow">↔</span>
+    <span class="k">T</span><span class="d">Tiny　　　ちいさい</span>
+  </div>
+  <div class="legend-row">
+    <span class="k">S</span><span class="d">Straight　真っ直ぐ</span>
+    <span class="arrow">↔</span>
+    <span class="k">C</span><span class="d">Curved　　湾曲</span>
+  </div>
+  <div class="legend-row">
+    <span class="k">L</span><span class="d">Left　　　左曲がり</span>
+    <span class="arrow">↔</span>
+    <span class="k">R</span><span class="d">Right　　 右曲がり</span>
+  </div>
+</div>
+
 
 </script>
 </body>
