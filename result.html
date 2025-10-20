@@ -17,6 +17,12 @@
   img{width:100%;height:auto;border-radius:12px;background:#fff;border:1px solid #e5e7eb}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
   a.btn{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:999px;text-decoration:none;color:#fff;background:#111}
+
+    /* ===== テーマカラーごとの指定 ===== */
+  body.theme-OG { --accent:#1e90ff; background:#f0f7ff; }     /* 青 */
+  body.theme-OT { --accent:#28a745; background:#f1faf2; }     /* 緑 */
+  body.theme-IG { --accent:#7d4fff; background:#f6f3ff; }     /* 紫 */
+  body.theme-IT { --accent:#ff69b4; background:#fff5fa; }     /* ピンク */
 </style>
 </head>
 <body>
@@ -44,6 +50,13 @@ const code = (params.get('code')||'----').toUpperCase();
 const sumsRaw = params.get('sums')||'';
 document.getElementById('code').textContent = code;
 
+// ▼ テーマ適用（最初の2文字で判定）
+const prefix = code.slice(0,2);
+const body = document.body;
+if (["OG","OT","IG","IT"].includes(prefix)) {
+  body.classList.add("theme-" + prefix);
+}
+
 // ▼ 軸スコアの表示（任意）
 const chips = document.getElementById('axisChips');
 if (sumsRaw){
@@ -60,20 +73,43 @@ if (sumsRaw){
 }
 
 // ▼ タイプ名＆画像：ここをあなたが埋める
-//   キー：4文字コード
-//   name：タイプ名、img：画像パス（例 assets/XXXX.png）、desc：短い説明
+//   キー：4文字コード（O/I × G/T × S/C × L/R の16通り）
+//   name：タイプ名（好きに命名）
+//   img：画像パス（例: "assets/OGSL.png"）
+//   desc：短い説明（任意）
 const TYPE_BOOK = {
-  // 例（ダミー）:
-  // "OGSL": { name:"オーグスル型", img:"assets/OGSL.png", desc:"大胆×直線×左脳的な傾向。" },
-  // "OGLR": { name:"オグル型", img:"assets/OGLR.png", desc:"大胆×左脳×右寄り直感のミックス。" },
-  // 必要なコード分だけ追加してください
+  // O=outward / I=inward
+  // G=giant / T=tiny
+  // S=straight / C=curved
+  // L=left / R=right
+
+  "OGSL": { name: "レフトベンドディカペニス型", img: "assets/OGSL.png", desc: "最も人気のある万能タイプ" },
+  "OGSR": { name: "アーライトデカペニスッガ―型", img: "assets/OGSR.png", desc: "左曲がりになれなかった惜しい存在" },
+  "OGCL": { name: "ひねくれでかちんぽ型", img: "assets/OGCL.png", desc: "ただのひねくれやろう、陳子がでかいだけ" },
+  "OGCR": { name: "うざいでかちんぽ型", img: "assets/OGCR.png", desc: "うざいけど、陳子がでかい" },
+  
+  "OTSL": { name: "ただ陳子が小さい型", img: "assets/OTSL.png", desc: "本当にただ陳子が小さいだけ" },
+  "OTSR": { name: "かわいそうな型", img: "assets/OTSR.png", desc: "哀れ" },
+  "OTCL": { name: "ドワーフ", img: "assets/OTCL.png", desc: "わんちゃんある" },
+  "OTCR": { name: "ムーニーマン", img: "assets/OTCR.png", desc: "かわいいね" },
+
+  "IGSL": { name: "IGSL型（仮）", img: "assets/IGSL.png", desc: "説明を入れてください。" },
+  "IGSR": { name: "IGSR型（仮）", img: "assets/IGSR.png", desc: "説明を入れてください。" },
+  "IGCL": { name: "IGCL型（仮）", img: "assets/IGCL.png", desc: "説明を入れてください。" },
+  "IGCR": { name: "IGCR型（仮）", img: "assets/IGCR.png", desc: "説明を入れてください。" },
+
+  "ITSL": { name: "ITSL型（仮）", img: "assets/ITSL.png", desc: "説明を入れてください。" },
+  "ITSR": { name: "ITSR型（仮）", img: "assets/ITSR.png", desc: "説明を入れてください。" },
+  "ITCL": { name: "ITCL型（仮）", img: "assets/ITCL.png", desc: "説明を入れてください。" },
+  "ITCR": { name: "ITCR型（仮）", img: "assets/ITCR.png", desc: "説明を入れてください。" }
 };
 
-// プレースホルダ処理
+// プレースホルダ処理（未設定コードはプレースホルダ画像で表示）
 const meta = TYPE_BOOK[code] || { name:"タイプ名を設定してください", img:"assets/placeholder.png", desc:"説明文を設定してください。" };
 document.getElementById('typeName').textContent = meta.name;
 document.getElementById('typeDesc').textContent = meta.desc;
 document.getElementById('typeImg').src = meta.img;
+
 </script>
 </body>
 </html>
