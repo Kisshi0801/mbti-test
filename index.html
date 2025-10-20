@@ -3,18 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>4軸診断（16P風UI）</title>
+<title>凹凸相性診断</title>
 <style>
   :root{
-    --bg:#ffffff;
-    --fg:#222;
-    --muted:#8b939f;
-    --accent-left:#2bb673;   /* 緑系（左側：そう思う） */
-    --accent-right:#7d4fff;  /* 紫系（右側：そう思わない） */
-    --neutral:#d9dee5;
-    --card:#f7f9fc;
+    --bg:#ffffff; --fg:#222; --muted:#8b939f; --accent-left:#2bb673; --accent-right:#7d4fff;
+    --neutral:#d9dee5; --card:#f7f9fc;
   }
-  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
   .container{max-width:760px;margin:24px auto;padding:20px;}
   header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
   .dotlogo{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent-left),var(--accent-right));box-shadow:0 2px 8px rgba(0,0,0,.12);}
@@ -26,12 +21,12 @@
   .q{background:#fff;border:1px solid #eef2f7;border-radius:14px;padding:16px 14px;margin:12px 0}
   .q-text{margin:0 0 12px;font-weight:600}
   .scale{display:flex;align-items:center;gap:14px;justify-content:center;padding:8px 0}
-  .choice{--size:26px;width:var(--size);height:var(--size);border-radius:50%;border:2px solid var(--neutral);cursor:pointer;display:grid;place-items:center;transition:.15s transform, .15s border-color, .15s background}
-  .choice[data-level="1"]{--size:34px;border-color:var(--accent-left, #2bb673)}
+  .choice{--size:26px;width:var(--size);height:var(--size);border-radius:50%;border:2px solid var(--neutral);cursor:pointer;display:grid;place-items:center;transition:.15s transform,.15s border-color,.15s background}
+  .choice[data-level="1"]{--size:34px;border-color:var(--accent-left)}
   .choice[data-level="2"]{--size:28px;border-color:rgba(43,182,115,.75)}
   .choice[data-level="3"]{--size:22px;border-color:var(--neutral)}
   .choice[data-level="4"]{--size:28px;border-color:rgba(125,79,255,.75)}
-  .choice[data-level="5"]{--size:34px;border-color:var(--accent-right,#7d4fff)}
+  .choice[data-level="5"]{--size:34px;border-color:var(--accent-right)}
   .choice:hover{transform:scale(1.06)}
   .choice.active[data-level="1"]{background:var(--accent-left);border-color:var(--accent-left)}
   .choice.active[data-level="2"]{background:rgba(43,182,115,.75);border-color:rgba(43,182,115,.75)}
@@ -40,13 +35,10 @@
   .choice.active[data-level="5"]{background:var(--accent-right);border-color:var(--accent-right)}
   .labels{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:6px}
   .nav{display:flex;gap:10px;justify-content:space-between;margin-top:18px}
-  .btn{appearance:none;border:0;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer;background:#111;color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.12);transition:.2s transform, .2s opacity}
+  .btn{appearance:none;border:0;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer;background:#111;color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.12);transition:.2s transform,.2s opacity}
   .btn:disabled{opacity:.35;cursor:not-allowed}
   .btn.secondary{background:#e9edf3;color:#222}
   .pill{display:inline-block;background:#eef2f7;border-radius:999px;padding:6px 10px;font-size:12px;color:#445}
-  .result{display:none}
-  .code{font-size:40px;letter-spacing:.12em;font-weight:800;margin:10px 0}
-  .muted{color:var(--muted)}
   @media (max-width:520px){ .choice{--size:24px} .choice[data-level="1"],.choice[data-level="5"]{--size:30px} }
 </style>
 </head>
@@ -54,7 +46,7 @@
   <div class="container">
     <header>
       <div class="dotlogo"></div>
-      <h1>4軸診断（Outward/Inward・Giant/Tiny・Straight/Curved・Left/Right）</h1>
+      <h1>凹凸相性診断</h1>
     </header>
 
     <div class="card">
@@ -68,218 +60,108 @@
         <button type="button" class="btn secondary" id="prevBtn">戻る</button>
         <div style="display:flex;gap:10px">
           <button type="button" class="btn" id="nextBtn">次へ</button>
-          <button type="button" class="btn" id="finishBtn" style="display:none">結果を見る</button>
+          <button type="button" class="btn" id="finishBtn" style="display:none">結果ページへ</button>
         </div>
-      </div>
-
-      <div id="result" class="result">
-        <div class="pill">Your 4-letter code</div>
-        <div class="code" id="code">----</div>
-        <p class="muted" id="explain"></p>
-        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap" id="axisScores"></div>
       </div>
     </div>
 
-    <p class="muted" style="margin-top:10px">
-      ※ 丸は左ほど「そう思う（緑）」、右ほど「そう思わない（紫）」に近い強さです。中央は中立。
+    <p style="color:#6b7280;margin-top:10px">
+      丸は左ほど「そう思う（緑）」、右ほど「そう思わない（紫）」に近い強さです。中央は中立。
     </p>
   </div>
 
 <script>
-/* ========= 設定：質問テキスト（ダミー）を自由に差し替え =========
-   1ページ＝1軸。各ページ5問。順序は固定（左が軸の左語、右が軸の右語）。
-   スコアは左を +（= -2…+2のうち正側）、右を - として合計します。
-*/
+/* ========= 質問ダミー：自由に差し替え ========= */
 const PAGES = [
-  {
-    key: "OI",   // outward / inward
-    label: "Page 1 / outward ⇄ inward",
-    leftWord: "outward", rightWord: "inward",
-    items: [
-      "初対面でもすぐ打ち解けるほうだ。",
-      "休日は人と過ごす予定を入れがちだ。",
-      "大人数の場でもエネルギーがわく。",
-      "知らない集まりにも気軽に参加できる。",
-      "話すより聞くほうが多い。（逆なら右寄り）"
-    ]
-  },
-  {
-    key: "GT",   // giant / tiny
-    label: "Page 2 / giant ⇄ tiny",
-    leftWord: "giant", rightWord: "tiny",
-    items: [
-      "思い切った挑戦にワクワクする。",
-      "大きな目標を立ててから動くことが多い。",
-      "安全よりスケール感を優先することがある。",
-      "周囲を巻き込んで大胆に進めたい。",
-      "控えめに小さく始めるほうが性に合う。（逆なら左寄り）"
-    ]
-  },
-  {
-    key: "SC",   // straight / curved
-    label: "Page 3 / straight ⇄ curved",
-    leftWord: "straight", rightWord: "curved",
-    items: [
-      "決めた手順はできるだけ守りたい。",
-      "結論は一貫しているほうが安心する。",
-      "感情より筋道を優先して判断する。",
-      "例外よりもルールを重視する。",
-      "状況で柔軟に変えるのが得意だ。（右寄り）"
-    ]
-  },
-  {
-    key: "LR",   // left / right
-    label: "Page 4 / left ⇄ right",
-    leftWord: "left", rightWord: "right",
-    items: [
-      "数字やデータを見るのが好きだ。",
-      "直感のひらめきを信じる。（右寄り）",
-      "分析してから決めると安心する。",
-      "理屈立てて説明するのが得意だ。",
-      "発想の面白さを優先することが多い。（右寄り）"
-    ]
-  }
+  { key:"OI", label:"Page 1 / outward ⇄ inward", items:[
+    "初対面でもすぐ打ち解けるほうだ。","休日は人と過ごす予定を入れがちだ。","大人数の場でもエネルギーがわく。","知らない集まりにも気軽に参加できる。","話すより聞くほうが多い。（右寄り）"
+  ]},
+  { key:"GT", label:"Page 2 / giant ⇄ tiny", items:[
+    "思い切った挑戦にワクワクする。","大きな目標を立ててから動くことが多い。","安全よりスケール感を優先することがある。","周囲を巻き込んで大胆に進めたい。","控えめに小さく始めるほうが性に合う。（右寄り）"
+  ]},
+  { key:"SC", label:"Page 3 / straight ⇄ curved", items:[
+    "決めた手順はできるだけ守りたい。","結論は一貫しているほうが安心する。","感情より筋道を優先して判断する。","例外よりもルールを重視する。","状況で柔軟に変えるのが得意だ。（右寄り）"
+  ]},
+  { key:"LR", label:"Page 4 / left ⇄ right", items:[
+    "数字やデータを見るのが好きだ。","直感のひらめきを信じる。（右寄り）","分析してから決めると安心する。","理屈立てて説明するのが得意だ。","発想の面白さを優先することが多い。（右寄り）"
+  ]}
 ];
-
-// 5段階 → -2,-1,0,+1,+2（左ほどプラス）
+// 5段階 → -2..+2（左=プラス、右=マイナス）
 const VALUE_MAP = {1:+2, 2:+1, 3:0, 4:-1, 5:-2};
-
-// 最終4文字：左語が優勢なら左語の頭文字、右が優勢なら右語の頭文字
-const AXIS_CODE = {
-  OI: { left:"O", right:"I" },  // outward / inward
-  GT: { left:"G", right:"T" },  // giant / tiny
-  SC: { left:"S", right:"C" },  // straight / curved
-  LR: { left:"L", right:"R" }   // left / right
-};
+// コード（左優勢: 左の文字）
+const AXIS_CODE = { OI:{L:"O",R:"I"}, GT:{L:"G",R:"T"}, SC:{L:"S",R:"C"}, LR:{L:"L",R:"R"} };
 
 let pageIndex = 0;
-const answers = {};  // { "OI-0": 1..5, ... }
-const axisSums = {}; // { OI: number, ... }
+const answers = {}; // { "OI-0": 1..5 }
 
 const el = {
-  bar: document.getElementById('bar'),
-  quiz: document.getElementById('quiz'),
-  sectionTag: document.getElementById('sectionTag'),
-  sectionTitle: document.getElementById('sectionTitle'),
-  prev: document.getElementById('prevBtn'),
-  next: document.getElementById('nextBtn'),
-  finish: document.getElementById('finishBtn'),
-  result: document.getElementById('result'),
-  code: document.getElementById('code'),
-  explain: document.getElementById('explain'),
-  axisScores: document.getElementById('axisScores')
+  bar:document.getElementById('bar'),
+  quiz:document.getElementById('quiz'),
+  sectionTag:document.getElementById('sectionTag'),
+  sectionTitle:document.getElementById('sectionTitle'),
+  prev:document.getElementById('prevBtn'),
+  next:document.getElementById('nextBtn'),
+  finish:document.getElementById('finishBtn')
 };
 
 function renderPage(){
-  const total = PAGES.length;
-  const p = PAGES[pageIndex];
-  el.quiz.innerHTML = '';
-  el.result.style.display = 'none';
+  const total=PAGES.length, p=PAGES[pageIndex];
+  el.quiz.innerHTML='';
+  el.sectionTag.textContent=`Section ${pageIndex+1} / ${total}`;
+  el.sectionTitle.textContent=p.label;
+  el.bar.style.width=`${(pageIndex)/total*100}%`;
 
-  el.sectionTag.textContent = `Section ${pageIndex+1} / ${total}`;
-  el.sectionTitle.textContent = `${p.label}`;
-  el.bar.style.width = `${(pageIndex)/total*100}%`;
+  p.items.forEach((text,i)=>{
+    const qId=`${p.key}-${i}`, selected=answers[qId] ?? null;
+    const q=document.createElement('div'); q.className='q';
+    const qt=document.createElement('p'); qt.className='q-text'; qt.textContent=text; q.appendChild(qt);
 
-  p.items.forEach((text, i) => {
-    const qId = `${p.key}-${i}`;
-    const selected = answers[qId] ?? null;
-
-    const q = document.createElement('div');
-    q.className = 'q';
-    const qt = document.createElement('p');
-    qt.className = 'q-text';
-    qt.textContent = text;
-    q.appendChild(qt);
-
-    const scale = document.createElement('div');
-    scale.className = 'scale';
-
+    const scale=document.createElement('div'); scale.className='scale';
     for(let level=1; level<=5; level++){
-      const c = document.createElement('button');
-      c.type = 'button';
-      c.className = 'choice'+(selected===level?' active':'');
-      c.dataset.level = String(level);
-      c.setAttribute('aria-label', `選択 ${level}/5`);
-      c.addEventListener('click', () => {
-        // クリック時に選択反映
-        [...scale.children].forEach(btn => btn.classList.remove('active'));
-        c.classList.add('active');
-        answers[qId] = level;
-        validateButtons();
-      });
+      const c=document.createElement('button'); c.type='button';
+      c.className='choice'+(selected===level?' active':''); c.dataset.level=String(level);
+      c.addEventListener('click',()=>{[...scale.children].forEach(b=>b.classList.remove('active')); c.classList.add('active'); answers[qId]=level; validateButtons();});
       scale.appendChild(c);
     }
     q.appendChild(scale);
 
-    const labels = document.createElement('div');
-    labels.className = 'labels';
-    labels.innerHTML = `<span>そう思う</span><span>どちらでもない</span><span>そう思わない</span>`;
+    const labels=document.createElement('div'); labels.className='labels';
+    labels.innerHTML='<span>そう思う</span><span>どちらでもない</span><span>そう思わない</span>';
     q.appendChild(labels);
-
     el.quiz.appendChild(q);
   });
 
   el.prev.disabled = pageIndex===0;
-  el.next.style.display = (pageIndex < total-1) ? 'inline-block' : 'none';
-  el.finish.style.display = (pageIndex === total-1) ? 'inline-block' : 'none';
+  el.next.style.display = (pageIndex<total-1)?'inline-block':'none';
+  el.finish.style.display = (pageIndex===total-1)?'inline-block':'none';
 
   validateButtons();
 }
-
 function validateButtons(){
-  const p = PAGES[pageIndex];
-  // 未回答があると次に進めない
-  const allAnswered = p.items.every((_, i) => answers[`${p.key}-${i}`]);
-  el.next.disabled = !allAnswered;
-  el.finish.disabled = !allAnswered;
+  const p=PAGES[pageIndex];
+  const allAnswered=p.items.every((_,i)=>answers[`${p.key}-${i}`]);
+  el.next.disabled=!allAnswered; el.finish.disabled=!allAnswered;
 }
-
-function sumAxis(){
-  // 軸ごとに合計（左=プラス、右=マイナス）
-  for(const pg of PAGES){
-    let sum = 0;
-    pg.items.forEach((_, i) => {
-      const v = answers[`${pg.key}-${i}`];
-      const mapped = VALUE_MAP[v] ?? 0;
-      sum += mapped;
-    });
-    axisSums[pg.key] = sum;
-  }
-}
-
-function showResult(){
-  sumAxis();
-  const letters = PAGES.map(pg => {
-    const sum = axisSums[pg.key];
-    const code = sum >= 0 ? AXIS_CODE[pg.key].left : AXIS_CODE[pg.key].right;
-    return code;
-  }).join('');
-  el.code.textContent = letters;
-
-  // 軸ごとの表示
-  el.axisScores.innerHTML = '';
-  PAGES.forEach(pg => {
-    const sum = axisSums[pg.key];
-    const left = AXIS_CODE[pg.key].left;
-    const right = AXIS_CODE[pg.key].right;
-    const chip = document.createElement('div');
-    chip.className = 'pill';
-    const dir = sum===0 ? '±0 (tie)' : (sum>0? `${left}+${sum}` : `${right}${sum}`);
-    chip.textContent = `${pg.leftWord} / ${pg.rightWord}: ${dir}`;
-    el.axisScores.appendChild(chip);
+function calcAndGoResult(){
+  const sums={};
+  PAGES.forEach(pg=>{
+    let sum=0;
+    pg.items.forEach((_,i)=>{ const v=answers[`${pg.key}-${i}`]; sum += VALUE_MAP[v]??0; });
+    sums[pg.key]=sum;
   });
-
-  el.explain.textContent = "各ページで5問の合計を計算し、左語（緑）優勢なら左の頭文字、右語（紫）優勢なら右の頭文字を採用しています。値は -10〜+10（5問×±2）。";
-  el.result.style.display = 'block';
-  el.bar.style.width = '100%';
+  const letters=PAGES.map(pg=> sums[pg.key] >= 0 ? AXIS_CODE[pg.key].L : AXIS_CODE[pg.key].R ).join('');
+  // URLへ渡す（例: result.html?code=OGSL&sums=OI:3,GT:-2,SC:0,LR:5）
+  const sumsParam = Object.entries(sums).map(([k,v])=>`${k}:${v}`).join(',');
+  const url = `result.html?code=${encodeURIComponent(letters)}&sums=${encodeURIComponent(sumsParam)}`;
+  location.href = url;
 }
 
-el.prev.addEventListener('click', () => { if(pageIndex>0){ pageIndex--; renderPage(); }});
-el.next.addEventListener('click', () => { if(pageIndex<PAGES.length-1){ pageIndex++; renderPage(); }});
-el.finish.addEventListener('click', showResult);
-
-// 初期描画
+document.getElementById('prevBtn').addEventListener('click',()=>{ if(pageIndex>0){ pageIndex--; renderPage(); }});
+document.getElementById('nextBtn').addEventListener('click',()=>{ if(pageIndex<PAGES.length-1){ pageIndex++; renderPage(); }});
+document.getElementById('finishBtn').addEventListener('click', calcAndGoResult);
 renderPage();
 </script>
 </body>
 </html>
+
+
